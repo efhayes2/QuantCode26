@@ -1,13 +1,14 @@
 import numpy as np
 import time
 
-from storage_helper import get_fwd_curve
+from gas_storage.storage_helper import get_poly_basis, ForwardCurve
+# from storage_helper import get_fwd_curve
 from storage_helper import MarketEnvironment, StorageContract
 
 
 def generate_paths(mkt):
     """Generates price paths using the daily mean-reversion logic."""
-    fwd = get_fwd_curve(mkt.T_days)
+    fwd = mkt.fwd_curve
     S = np.zeros((mkt.T_days + 1, mkt.M))
     x = np.zeros((mkt.T_days + 1, mkt.M))
 
@@ -23,11 +24,6 @@ def generate_paths(mkt):
     return S
 
 
-def get_poly_basis(prices):
-    """Constructs the design matrix for degree-3 polynomial regression."""
-    return np.column_stack([np.ones(len(prices)), prices, prices ** 2, prices ** 3])
-
-
 def fast_lstsq_coeffs(X_poly, y):
     """Direct solver for polynomial coefficients."""
     return np.linalg.lstsq(X_poly, y, rcond=None)[0]
@@ -35,8 +31,8 @@ def fast_lstsq_coeffs(X_poly, y):
 
 def run_backward_training(mkt, con):
     """Training phase: Solves for the optimal policy coefficients."""
-    S = generate_paths(mkt)
-    fwd = get_fwd_curve(mkt.T_days)
+    S = mkt.generate_paths()
+    fwd = mkt.fwd_curve
     grid = con.inventory_grid
     num_v = len(grid)
 
@@ -88,7 +84,8 @@ def run_backward_training(mkt, con):
 
 def run_forward_validation(mkt, con, all_coeffs):
     """Validation phase: Applies the frozen policy to fresh paths."""
-    S_new = generate_paths(mkt)
+
+    S = mkt.generate_paths()
     grid = con.inventory_grid
     num_v = len(grid)
 
@@ -98,7 +95,7 @@ def run_forward_validation(mkt, con, all_coeffs):
     for t in range(mkt.T_days):
         if t % 50 == 0: print(f"  [Forward] Day {t:3}")
 
-        X_poly = get_poly_basis(S_new[t, :])
+        X_poly = get_poly_basis(S[t, :])
         new_idx = np.zeros(mkt.M, dtype=int)
 
         # Grouping paths by inventory level for vectorization
@@ -107,7 +104,7 @@ def run_forward_validation(mkt, con, all_coeffs):
             if not np.any(mask): continue
 
             admissible = np.arange(max(0, v_i - 3), min(num_v, v_i + 2))
-            path_prices = S_new[t, mask]
+            path_prices = S[t, mask]
             path_X_poly = X_poly[mask]
 
             best_score = np.full(np.sum(mask), -1e15)
@@ -133,7 +130,22 @@ def run_forward_validation(mkt, con, all_coeffs):
 
 
 if __name__ == "__main__":
-    mkt = MarketEnvironment(sigma=0.0945, M=2000)
+    # Define the Boogert & de Jong forward points
+    bdj_days = np.array([0, 83, 216, 271, 365])
+    bdj_prices = np.array([15.01, 15.01, 18.00, 25.83, 15.73])
+
+    # Create the forward market object
+    fwd_mkt = ForwardCurve(bdj_days, bdj_prices)
+
+    # Pass it to your chosen environment
+    # mkt = MarketEnvironment(forward_market=fwd_mkt, M=20000)
+
+    # BdJ 2008 Benchmark Parameters (Daily Rates)
+    mkt = MarketEnvironment(kappa=0.05, sigma=0.0915, M=20000, T_days=365,
+                            forward_market=fwd_mkt)
+
+    #mkt = MarketEnvironment(kappa=0.12, sigma=0.0315, M=20000, T_days=365)
+    # mkt = MarketEnvironment(sigma=0.0945, M=2000)
     con = StorageContract()
 
     print("=" * 60)
