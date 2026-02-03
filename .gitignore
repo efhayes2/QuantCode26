@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# PyCharm metadata
+.idea/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Data and Logs (Common for Quant work)
+*.csv
+*.parquet
+*.log
+.env
