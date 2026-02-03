@@ -50,13 +50,24 @@ def run_backward_training(mkt, con):
     for t in range(mkt.T_days - 1, -1, -1):
         if t % 50 == 0: print(f"  [Backward] Day {t:3} | Fwd: {fwd[t]:5.2f}")
 
+        # --- BATCH OPTIMIZATION START ---
         X_poly = get_poly_basis(S[t, :])
-        cv_surface = np.zeros((num_v, mkt.M))
 
+        # 1. Compute the pseudo-inverse once for the entire day
+        pinv_X = np.linalg.pinv(X_poly)
+
+        # 2. Batch Solve: grid_coeffs is (num_v, 4)
+        # Instead of 101 separate lstsq calls, we do one matrix multiply
+        grid_coeffs = V @ pinv_X.T
+
+        # 3. Store coefficients and compute continuation value surface
+        # cv_surface is (num_v, M)
+        cv_surface = grid_coeffs @ X_poly.T
+
+        # Map the batch results into your existing storage structure
         for i in range(num_v):
-            coeffs = fast_lstsq_coeffs(X_poly, V[i, :])
-            all_coeffs[t][i] = coeffs
-            cv_surface[i, :] = X_poly @ coeffs
+            all_coeffs[t][i] = grid_coeffs[i]
+        # --- BATCH OPTIMIZATION END ---
 
         new_V = np.zeros_like(V)
         for i, v_start in enumerate(grid):
