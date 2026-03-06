@@ -2,6 +2,7 @@
 .idea/
 *.iml
 cmake-build-*/
+*.xml
 
 # --- Python ---
 __pycache__/
@@ -15,6 +16,8 @@ dist/
 
 #ignore graphics
 *.png
+
+
 
 # --- Quant/Data Artifacts ---
 # Exclude data files to keep the repo small and avoid leaking data
