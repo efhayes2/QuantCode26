@@ -4,11 +4,20 @@
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage{hyperref} % Enables clickable links
 \usepackage{enumitem}
 \usepackage{caption}
 
-% Updated path to look 'up' one level to find the plots folder
+% Set link colors for professional appearance
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={PCA of Global Markets - Ed Hayes},
+}
+
+% Path configuration
 \graphicspath{ {../plots/} }
 
 \title{ML in Finance: Principal Component Analysis of Global Markets}
@@ -19,27 +28,31 @@
 
 \maketitle
 
+% --- CLICKABLE TABLE OF CONTENTS ---
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
 \section{Introduction}
 Principal Component Analysis (PCA) is a foundational dimensionality reduction technique used in quantitative finance to identify latent drivers of asset returns[cite: 5]. Whether analyzing the term structure of interest rates or the sector rotation of the S\&P 500, PCA allows us to distill hundreds of correlated variables into a few interpretable factors[cite: 6].
 
 \section{Mathematical Foundation}
-
 \subsection{Data Representation and Stationarity}
-Let $Y_t \in \mathbb{R}^n$ represent the vector of $n$ assets observed at time $t$[cite: 10]. To ensure the data is stationary, we transform the raw prices or yields[cite: 11]:
+To ensure the data is stationary, we transform the raw prices or yields[cite: 11]:
 \begin{itemize}
-    \item \textbf{Interest Rates:} We utilize \textit{first differences} ($\Delta y_t = y_t - y_{t-1}$) because yields are already expressed in percentages[cite: 12].
-    \item \textbf{Equities:} We utilize \textit{percentage changes} or returns ($r_t = \frac{P_t - P_{t-1}}{P_{t-1}}$) to normalize for absolute price levels[cite: 13].
+    \item \textbf{Interest Rates:} We utilize \textit{first differences} ($\Delta y_{t}=y_{t}-y_{t-1}$) because yields are already expressed in percentages[cite: 12].
+    \item \textbf{Equities:} We utilize \textit{percentage changes} or returns ($r_{t}=\frac{P_{t}-P_{t-1}}{P_{t-1}}$) to normalize for absolute price levels[cite: 13].
 \end{itemize}
 
 \subsection{The Covariance Matrix}
-PCA seeks to find the directions of maximum variance[cite: 15]. Let $X$ be the $T \times n$ matrix of centered changes[cite: 15]. The sample covariance matrix $\Sigma$ is:
-\[ \Sigma = \frac{1}{T-1} X^T X \] [cite: 17]
-In financial applications, we typically perform PCA on the \textbf{Covariance Matrix} (unscaled) to preserve information about the relative volatility of different segments of the market[cite: 18].
+PCA seeks to find the directions of maximum variance[cite: 15]. Let $X$ be the $T \times n$ matrix of centered changes. The sample covariance matrix $\Sigma$ is[cite: 15]:
+\[ \Sigma=\frac{1}{T-1}X^{T}X \]
 
 \subsection{Eigen-Decomposition}
 We diagonalize $\Sigma$ to find the principal components[cite: 20]:
-\[ \Sigma = Q \Lambda Q^T \] [cite: 21]
-where $\Lambda$ contains the eigenvalues (variance explained) and $Q = [v_1, v_2, v_3]$ contains the eigenvectors (factor loadings)[cite: 22].
+\[ \Sigma=Q\Lambda Q^{T} \]
+where $\Lambda$ contains the eigenvalues and $Q=[v_{1},v_{2},v_{3}]$ contains the eigenvectors[cite: 22].
 
 \section{Cross-Asset Interpretation}
 The first three principal components often explain over 95\% of market movement[cite: 25].
@@ -49,50 +62,59 @@ The first three principal components often explain over 95\% of market movement[
 \begin{tabular}{@{}lll@{}}
 \toprule
 \textbf{Component} & \textbf{Fixed Income Interpretation} & \textbf{Equity Interpretation} \\ \midrule
-PC1 & Level (Parallel Shift) & Market Factor (Beta / Systemic Risk) \\
-PC2 & Slope (Twist) & Sector/Style Rotation (Growth vs. Value) \\
+PC1 & Level (Parallel Shift) & Market Factor (Beta) \\
+PC2 & Slope (Twist) & Sector/Style Rotation \\
 PC3 & Curvature (Butterfly) & Specific/Thematic Clusters \\ \bottomrule
 \end{tabular}
-\caption{Comparison of latent factors across Interest Rates and Equities[cite: 26, 27].}
+\caption{Comparison of latent factors[cite: 27].}
 \end{table}
 
-\section{Historical Case Studies: 20-Year Regime Shifts}
-By utilizing 5-year rolling windows, we observe how market regimes evolve[cite: 29]:
-
+\section{Historical Case Studies}
 \subsection{The 2008 Global Financial Crisis (2005--2010)}
-During this period, the Financials (XLF) sector showed a disproportionately high loading in PC1 and PC2[cite: 31]. In Fixed Income, the ``Slope'' factor became highly volatile as the Fed aggressively cut rates[cite: 32].
+During this period, the Financials (XLF) sector showed a disproportionately high loading in PC1 and PC2[cite: 31]. In Fixed Income, the ``Slope'' factor became highly volatile as the Fed cut rates[cite: 32].
 
 \subsection{The Pandemic and Inflation Era (2020--2026)}
-In the current regime, Technology (XLK) has dominated the Market Factor[cite: 34]. In the Treasury market, the aggressive hiking cycle of 2022--2023 saw the ``Level'' factor regain nearly 90\% of explained variance[cite: 35].
+Technology (XLK) has dominated the Market Factor[cite: 34]. In the Treasury market, the 2022--2023 hiking cycle saw the ``Level'' factor regain nearly 90\% of explained variance[cite: 35].
 
 \newpage
 \appendix
 
+% --- APPENDIX A: RATES SCREE ---
 \section{Interest Rate: Scree Plots (2000--2025)}
-% Each image now on its own page
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2000_2005_Scree.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2005_2010_Scree.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2010_2015_Scree.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2015_2020_Scree.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2020_2025_Scree.png} \end{figure} \newpage
+\begin{figure}[h!] \centering
+    \includegraphics[width=0.65\textwidth]{Rates_2000_2005_Scree.png} \\ \vfill
+    \includegraphics[width=0.65\textwidth]{Rates_2005_2010_Scree.png} \\ \vfill
+    \includegraphics[width=0.65\textwidth]{Rates_2010_2015_Scree.png}
+\end{figure} \newpage
+\begin{figure}[h!] \centering
+    \includegraphics[width=0.7\textwidth]{Rates_2015_2020_Scree.png} \\ \vspace{2cm}
+    \includegraphics[width=0.7\textwidth]{Rates_2020_2025_Scree.png}
+\end{figure} \newpage
 
+% --- APPENDIX B: RATES LOADINGS ---
 \section{Interest Rate: Factor Loadings (2000--2025)}
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2000_2005_Loadings.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2005_2010_Loadings.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2010_2015_Loadings.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2015_2020_Loadings.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Rates_2020_2025_Loadings.png} \end{figure} \newpage
+\begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Rates_2000_2005_Loadings.png} \end{figure} \newpage
+\begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Rates_2005_2010_Loadings.png} \end{figure} \newpage
+\begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Rates_2010_2015_Loadings.png} \end{figure} \newpage
+\begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Rates_2015_2020_Loadings.png} \end{figure} \newpage
+\begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Rates_2020_2025_Loadings.png} \end{figure} \newpage
 
+% --- APPENDIX C: EQUITY SCREE ---
 \section{Equity Sector: Scree Plots (2005--2025)}
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Equity_2005_2010_Scree.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Equity_2010_2015_Scree.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Equity_2015_2020_Scree.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Equity_2020_2025_Scree.png} \end{figure} \newpage
+\begin{figure}[h!] \centering
+    \includegraphics[width=0.65\textwidth]{Equity_2005_2010_Scree.png} \\ \vfill
+    \includegraphics[width=0.65\textwidth]{Equity_2010_2015_Scree.png} \\ \vfill
+    \includegraphics[width=0.65\textwidth]{Equity_2015_2020_Scree.png}
+\end{figure} \newpage
+\begin{figure}[h!] \centering
+    \includegraphics[width=0.7\textwidth]{Equity_2020_2025_Scree.png}
+\end{figure} \newpage
 
+% --- APPENDIX D: EQUITY LOADINGS ---
 \section{Equity Sector: Factor Loadings (2005--2025)}
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Equity_2005_2010_Loadings.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Equity_2010_2015_Loadings.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Equity_2015_2020_Loadings.png} \end{figure} \newpage
-\begin{figure}[h!] \centering \includegraphics[width=0.95\textwidth]{Equity_2020_2025_Loadings.png} \end{figure}
+\begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Equity_2005_2010_Loadings.png} \end{figure} \newpage
+\begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Equity_2010_2015_Loadings.png} \end{figure} \newpage
+\begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Equity_2015_2020_Loadings.png} \end{figure} \newpage
+\begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Equity_2020_2025_Loadings.png} \end{figure}
 
 \end{document}
