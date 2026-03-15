@@ -4,9 +4,10 @@
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage{hyperref} % Enables clickable links
+\usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{caption}
+\usepackage{xcolor}
 
 % Set link colors for professional appearance
 \hypersetup{
@@ -17,7 +18,7 @@
     pdftitle={PCA of Global Markets - Ed Hayes},
 }
 
-% Path configuration
+% Path configuration to look one level up for the plots directory
 \graphicspath{ {../plots/} }
 
 \title{ML in Finance: Principal Component Analysis of Global Markets}
@@ -35,27 +36,27 @@
 \pagenumbering{arabic}
 
 \section{Introduction}
-Principal Component Analysis (PCA) is a foundational dimensionality reduction technique used in quantitative finance to identify latent drivers of asset returns[cite: 5]. Whether analyzing the term structure of interest rates or the sector rotation of the S\&P 500, PCA allows us to distill hundreds of correlated variables into a few interpretable factors[cite: 6].
+Principal Component Analysis (PCA) is a foundational dimensionality reduction technique used in quantitative finance to identify latent drivers of asset returns. Whether analyzing the term structure of interest rates or the sector rotation of the S\&P 500, PCA allows us to distill hundreds of correlated variables into a few interpretable factors.
 
 \section{Mathematical Foundation}
 \subsection{Data Representation and Stationarity}
-To ensure the data is stationary, we transform the raw prices or yields[cite: 11]:
+To ensure the data is stationary, we transform the raw prices or yields:
 \begin{itemize}
-    \item \textbf{Interest Rates:} We utilize \textit{first differences} ($\Delta y_{t}=y_{t}-y_{t-1}$) because yields are already expressed in percentages[cite: 12].
-    \item \textbf{Equities:} We utilize \textit{percentage changes} or returns ($r_{t}=\frac{P_{t}-P_{t-1}}{P_{t-1}}$) to normalize for absolute price levels[cite: 13].
+    \item \textbf{Interest Rates:} We utilize \textit{first differences} ($\Delta y_{t}=y_{t}-y_{t-1}$) because yields are already expressed in percentages.
+    \item \textbf{Equities:} We utilize \textit{percentage changes} or returns ($r_{t}=\frac{P_{t}-P_{t-1}}{P_{t-1}}$) to normalize for absolute price levels.
 \end{itemize}
 
 \subsection{The Covariance Matrix}
-PCA seeks to find the directions of maximum variance[cite: 15]. Let $X$ be the $T \times n$ matrix of centered changes. The sample covariance matrix $\Sigma$ is[cite: 15]:
+PCA seeks to find the directions of maximum variance. Let $X$ be the $T \times n$ matrix of centered changes. The sample covariance matrix $\Sigma$ is:
 \[ \Sigma=\frac{1}{T-1}X^{T}X \]
 
 \subsection{Eigen-Decomposition}
-We diagonalize $\Sigma$ to find the principal components[cite: 20]:
+We diagonalize $\Sigma$ to find the principal components:
 \[ \Sigma=Q\Lambda Q^{T} \]
-where $\Lambda$ contains the eigenvalues and $Q=[v_{1},v_{2},v_{3}]$ contains the eigenvectors[cite: 22].
+where $\Lambda$ contains the eigenvalues and $Q=[v_{1},v_{2},v_{3}]$ contains the eigenvectors.
 
 \section{Cross-Asset Interpretation}
-The first three principal components often explain over 95\% of market movement[cite: 25].
+The first three principal components often explain over 95\% of market movement.
 
 \begin{table}[h]
 \centering
@@ -66,21 +67,43 @@ PC1 & Level (Parallel Shift) & Market Factor (Beta) \\
 PC2 & Slope (Twist) & Sector/Style Rotation \\
 PC3 & Curvature (Butterfly) & Specific/Thematic Clusters \\ \bottomrule
 \end{tabular}
-\caption{Comparison of latent factors[cite: 27].}
+\caption{Comparison of latent factors.}
 \end{table}
 
+\newpage
 \section{Historical Case Studies}
+
+\textcolor{red}{\textbf{These interpretations were created by Google Gemini. As such, you need to analyze them carefully and assess their accuracy for yourself.}}
+
+\subsection{Evolution of the Interest Rate "Level" Factor (PC1)}
+A longitudinal analysis of the Scree plots in Appendix \ref{app:ir_scree} reveals how the dominance of the Level factor (PC1) fluctuates with Fed policy and economic stability:
+\begin{itemize}
+    \item \textbf{2000--2005 (81.2\%):} High synchronization following the Dot-com bubble burst and subsequent easing cycle.
+    \item \textbf{2005--2010 (60.9\%):} A significant drop in PC1 dominance. As seen in Appendix \ref{app:ir_scree}, the Slope factor (PC2) spiked to 26.3\% variance as the curve twisted violently during the Global Financial Crisis.
+    \item \textbf{2010--2015 (86.6\%):} Maximum PC1 dominance. During the "Zero Bound" era, the entire curve was pinned by quantitative easing, leading to highly parallel movements.
+    \item \textbf{2015--2020 (78.3\%):} A return to moderate levels as the Fed attempted to normalize rates before the COVID-19 shock.
+    \item \textbf{2020--2025 (73.2\%):} While still dominant, high-dispersion events prevented the Level factor from reaching the levels seen in 2010.
+\end{itemize}
+
 \subsection{The 2008 Global Financial Crisis (2005--2010)}
-During this period, the Financials (XLF) sector showed a disproportionately high loading in PC1 and PC2[cite: 31]. In Fixed Income, the ``Slope'' factor became highly volatile as the Fed cut rates[cite: 32].
+During this era, the \textbf{Financials (XLF)} sector was the primary driver of market variance.
+\begin{itemize}
+    \item \textbf{Market Sensitivity:} XLF exhibited the highest positive weight in PC1 (Market Beta), as seen in the Factor Loadings in Appendix \ref{app:eq_loadings}.
+    \item \textbf{Sector Specifics:} The massive spike in XLF within PC2 (Value vs. Growth) highlights that the crisis was specifically a financial-sector event.
+\end{itemize}
 
 \subsection{The Pandemic and Inflation Era (2020--2026)}
-Technology (XLK) has dominated the Market Factor[cite: 34]. In the Treasury market, the 2022--2023 hiking cycle saw the ``Level'' factor regain nearly 90\% of explained variance[cite: 35].
+The current regime is defined by \textbf{Technology (XLK)} dominance and a clear Growth-led market structure.
+\begin{itemize}
+    \item \textbf{Tech as Beta:} In Appendix \ref{app:eq_loadings}, XLK shows extreme sensitivity in PC1, becoming a proxy for the overall market.
+    \item \textbf{Growth vs. Value:} The extreme negative loading of XLK in PC2 illustrates its role as the engine for "Growth" trades.
+\end{itemize}
 
 \newpage
 \appendix
 
 % --- APPENDIX A: RATES SCREE ---
-\section{Interest Rate: Scree Plots (2000--2025)}
+\section{Interest Rate: Scree Plots (2000--2025)} \label{app:ir_scree}
 \begin{figure}[h!] \centering
     \includegraphics[width=0.65\textwidth]{Rates_2000_2005_Scree.png} \\ \vfill
     \includegraphics[width=0.65\textwidth]{Rates_2005_2010_Scree.png} \\ \vfill
@@ -92,7 +115,7 @@ Technology (XLK) has dominated the Market Factor[cite: 34]. In the Treasury mark
 \end{figure} \newpage
 
 % --- APPENDIX B: RATES LOADINGS ---
-\section{Interest Rate: Factor Loadings (2000--2025)}
+\section{Interest Rate: Factor Loadings (2000--2025)} \label{app:ir_loadings}
 \begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Rates_2000_2005_Loadings.png} \end{figure} \newpage
 \begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Rates_2005_2010_Loadings.png} \end{figure} \newpage
 \begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Rates_2010_2015_Loadings.png} \end{figure} \newpage
@@ -100,7 +123,7 @@ Technology (XLK) has dominated the Market Factor[cite: 34]. In the Treasury mark
 \begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Rates_2020_2025_Loadings.png} \end{figure} \newpage
 
 % --- APPENDIX C: EQUITY SCREE ---
-\section{Equity Sector: Scree Plots (2005--2025)}
+\section{Equity Sector: Scree Plots (2005--2025)} \label{app:eq_scree}
 \begin{figure}[h!] \centering
     \includegraphics[width=0.65\textwidth]{Equity_2005_2010_Scree.png} \\ \vfill
     \includegraphics[width=0.65\textwidth]{Equity_2010_2015_Scree.png} \\ \vfill
@@ -111,7 +134,7 @@ Technology (XLK) has dominated the Market Factor[cite: 34]. In the Treasury mark
 \end{figure} \newpage
 
 % --- APPENDIX D: EQUITY LOADINGS ---
-\section{Equity Sector: Factor Loadings (2005--2025)}
+\section{Equity Sector: Factor Loadings (2005--2025)} \label{app:eq_loadings}
 \begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Equity_2005_2010_Loadings.png} \end{figure} \newpage
 \begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Equity_2010_2015_Loadings.png} \end{figure} \newpage
 \begin{figure}[h!] \centering \includegraphics[width=0.9\textwidth]{Equity_2015_2020_Loadings.png} \end{figure} \newpage

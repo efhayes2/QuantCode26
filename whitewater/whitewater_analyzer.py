@@ -20,7 +20,7 @@ class WhitewaterDashboard:
         self.df.set_index('day', inplace=True)
         return self
 
-    def run_analysis(self):
+    def run_analysis(self, tc, no_HH):
         """Generates the 3-part diagnostic dashboard and saves current/timestamped versions."""
         # Risk Calculation
         returns = self.df['total_daily_pl']
@@ -55,10 +55,18 @@ class WhitewaterDashboard:
 
         plt.tight_layout()
 
+        # 2. Determine the HH suffix
+        hh_suffix = "_no_HH" if no_HH else ""
+        tc_suffix = f"_tc{int(tc * 100)}"
+
+        # 3. Construct the filename
+        filename = f"whitewater_dashboard_current{tc_suffix}{hh_suffix}.png"
+        curr_png = os.path.join(self.directory, filename)
+
         # Save Logic (Historical and Current)
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         hist_png = os.path.join(self.directory, f'whitewater_dashboard_{ts}.png')
-        curr_png = os.path.join(self.directory, 'whitewater_dashboard_current.png')
+        #curr_png = os.path.join(self.directory, 'whitewater_dashboard_current.png')
 
         plt.savefig(hist_png)
         plt.savefig(curr_png)

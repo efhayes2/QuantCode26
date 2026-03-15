@@ -1,17 +1,17 @@
-import pandas as pd
-import numpy as np
-import ssl
 import os
+import ssl
 import time
-import matplotlib.pyplot as plt
-import matplotlib
-from datetime import datetime
 from pathlib import Path
+
+import matplotlib
+import matplotlib.pyplot as plt
+import pandas as pd
 from dotenv import load_dotenv
 from sklearn.decomposition import PCA
 
 # --- IMPORT CONFIG FROM YOUR MODULE ---
-from uconn_ml_26.data_classes import TreasuryConfig
+# from uconn_ml_26.data_classes import TreasuryConfig
+from data_classes import TreasuryConfig
 
 # --- SSL FIX & PLOT SETUP ---
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
@@ -22,6 +22,7 @@ try:
 except:
     pass
 
+#e = np.exp(1)
 
 class TreasuryDataManager:
     """Handles data fetching from FRED and local persistence."""

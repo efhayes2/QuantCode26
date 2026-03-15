@@ -5,8 +5,9 @@
 \contentsline {subsection}{\numberline {2.3}Eigen-Decomposition}{1}{subsection.2.3}%
 \contentsline {section}{\numberline {3}Cross-Asset Interpretation}{1}{section.3}%
 \contentsline {section}{\numberline {4}Historical Case Studies}{2}{section.4}%
-\contentsline {subsection}{\numberline {4.1}The 2008 Global Financial Crisis (2005--2010)}{2}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}The Pandemic and Inflation Era (2020--2026)}{2}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.1}Evolution of the Interest Rate "Level" Factor (PC1)}{2}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}The 2008 Global Financial Crisis (2005--2010)}{2}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}The Pandemic and Inflation Era (2020--2026)}{2}{subsection.4.3}%
 \contentsline {section}{\numberline {A}Interest Rate: Scree Plots (2000--2025)}{3}{appendix.A}%
 \contentsline {section}{\numberline {B}Interest Rate: Factor Loadings (2000--2025)}{5}{appendix.B}%
 \contentsline {section}{\numberline {C}Equity Sector: Scree Plots (2005--2025)}{10}{appendix.C}%

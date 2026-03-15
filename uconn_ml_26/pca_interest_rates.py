@@ -48,6 +48,9 @@ if __name__ == "__main__":
             analyzer.plot_scree(title_prefix="US Treasury", save_path=scree_file)
             analyzer.plot_results(title_prefix="US Treasury", save_path=loadings_file)
 
+
+
+
         print("\nAll Treasury PCA plots have been saved to the /plots directory.")
     else:
         print(f"CRITICAL: Data file not found at {data_path}.")
